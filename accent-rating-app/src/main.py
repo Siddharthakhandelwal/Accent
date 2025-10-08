@@ -1,9 +1,9 @@
-from unittest import result
-import gdown
+# from unittest import result
+# import gdown
 import requests
 import assemblyai as aai
-import os
-from utils import convert_mp4_to_mp3, get_file_id
+# import os
+# from utils import convert_mp4_to_mp3, get_file_id
 
 def assembly(audio_file):
     aai.settings.api_key = "9195d7c4cdec43238006f64f72d01b1c"
@@ -14,16 +14,17 @@ def assembly(audio_file):
         print("Error:", transcript.error)
         return None
     else:
-        return transcript.text[:1000]  # Return first 1000 characters of the transcript
+        return transcript.text[:20]  # Return first 1000 characters of the transcript
 
 def create_post():
-    transcript_text = assembly("Marc_Kervens_Simeon_2025-08-02_21-14-07_Video.mp3")
+    transcript_text = assembly("marc-kervens-simeon-2025-08-02-21-14-07-video_qnZ6Q8QI.wav")
+    print("Transcript Text:", transcript_text)
     url = "https://thefluentme.p.rapidapi.com/post"
 
     payload = {
         "post_language_id": "22",
         "post_title":"first post",  # First 60 characters of the transcript as title
-        "post_content":"This is an example post. The post can be between three and 1000 characters long."
+        "post_content": transcript_text,  # Full transcript as content
     }
     headers = {
         "x-rapidapi-key": "8cc9f78fb1msh7bc3e2f14815ce2p1e2b6cjsn6234c893bf06",
@@ -37,12 +38,12 @@ def create_post():
     return response.json()["post_id"]
 
 def get_result(post_id):
-
+    audio_url = "https://drive.google.com/uc?export=download&id=1eMTIwtNsohnzf-q06anvME2kDKQOSXaD"#upload_audio_to_fileio("marc-kervens-simeon-2025-08-02-21-14-07-video_qnZ6Q8QI.mp3")
     url = f"https://thefluentme.p.rapidapi.com/score/{post_id}"
 
     querystring = {"scale":"90"}
 
-    payload = { "audio_provided": "https://storage.googleapis.com/thefluentme01.appspot.com/audio/test/example_user_recording.wav" }
+    payload = { "audio_provided": audio_url }
     headers = {
         "x-rapidapi-key": "8cc9f78fb1msh7bc3e2f14815ce2p1e2b6cjsn6234c893bf06",
         "x-rapidapi-host": "thefluentme.p.rapidapi.com",
