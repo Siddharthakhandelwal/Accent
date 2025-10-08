@@ -2,14 +2,22 @@ from email.utils import unquote
 from urllib.parse import parse_qs, urlparse
 import ffmpeg
 
-def convert_mp4_to_mp3(mp4_path, mp3_path=None):
-    if mp3_path is None:
-        mp3_path = mp4_path.rsplit('.', 1)[0] + '.mp3'
+def convert_mp4_to_wav_and_trim(mp4_path, wav_path=None, duration=50):
+    """
+    Convert MP4 to WAV, trim to `duration` seconds, and return WAV file path.
+    """
+    if wav_path is None:
+        wav_path = mp4_path.rsplit('.', 1)[0] + '.wav'
     
     try:
-        ffmpeg.input(mp4_path).output(mp3_path, format='mp3', acodec='libmp3lame').run(overwrite_output=True)
-        print(f"✅ Converted to: {mp3_path}")
-        return mp3_path
+        (
+            ffmpeg
+            .input(mp4_path, t=duration)
+            .output(wav_path, format='wav', acodec='pcm_s16le')
+            .run(overwrite_output=True)
+        )
+        print(f"✅ Converted and trimmed to: {wav_path}")
+        return wav_path
     except ffmpeg.Error as e:
         print("❌ FFmpeg error:", e)
         return None
