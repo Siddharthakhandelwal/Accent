@@ -3,3 +3,4 @@ moviepy
 requests
 assemblyai
 azure-cognitiveservices-speech
+ffmpeg-python

@@ -1,6 +1,13 @@
 from email.utils import unquote
 from urllib.parse import parse_qs, urlparse
-import ffmpeg
+import os
+import sys
+
+try:
+    import ffmpeg
+except ImportError:
+    print("Error: ffmpeg-python package is not installed. Please run: pip install ffmpeg-python")
+    sys.exit(1)
 
 def convert_mp4_to_wav_and_trim(mp4_path, wav_path=None, duration=50):
     """
@@ -10,6 +17,16 @@ def convert_mp4_to_wav_and_trim(mp4_path, wav_path=None, duration=50):
         wav_path = mp4_path.rsplit('.', 1)[0] + '.wav'
     
     try:
+        # Check if ffmpeg executable is available in the system path
+        import shutil
+        if shutil.which('ffmpeg') is None:
+            print("❌ Error: ffmpeg executable not found in system PATH.")
+            print("Please install ffmpeg:")
+            print("  - Windows: Download from https://www.gyan.dev/ffmpeg/builds/ and add to PATH")
+            print("  - macOS: brew install ffmpeg")
+            print("  - Linux: apt-get install ffmpeg or equivalent")
+            return None
+            
         (
             ffmpeg
             .input(mp4_path, t=duration)
@@ -20,6 +37,9 @@ def convert_mp4_to_wav_and_trim(mp4_path, wav_path=None, duration=50):
         return wav_path
     except ffmpeg.Error as e:
         print("❌ FFmpeg error:", e)
+        return None
+    except FileNotFoundError:
+        print("❌ Error: ffmpeg executable not found. Please install ffmpeg and make sure it's in your PATH.")
         return None
 
 def get_file_id(url):
