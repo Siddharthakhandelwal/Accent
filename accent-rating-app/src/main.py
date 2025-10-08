@@ -3,6 +3,7 @@ import assemblyai as aai
 from utils import convert_mp4_to_wav_and_trim, get_file_id
 import re
 import gdown
+import os
 
 def upload_file_catbox(filepath):
     url = "https://catbox.moe/user/api.php"
@@ -96,6 +97,8 @@ def main():
         print("Created Post ID:", id)
         result = get_result(id,wav_file_url)
         print(result)
-        
+        os.remove(mp4_path)
+        os.remove(wav_path)
+
 if __name__ == "__main__":
     main()
